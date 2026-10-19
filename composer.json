@@ -1,0 +1,15 @@
+{
+    "name": "calmaprg/payroll-api",
+    "authors": [
+        {
+            "name": "sukaidism",
+            "email": "calma.paulrichard@gmail.com"
+        }
+    ],
+    "require": {
+        "bref/bref": "^3.0",
+        "bramus/router": "^1.6",
+        "dompdf/dompdf": "^3.1",
+        "aws/aws-sdk-php": "^3.401"
+    }
+}
