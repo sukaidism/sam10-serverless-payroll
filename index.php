@@ -55,18 +55,21 @@ $router->post('/api/payslips/(\w+)/generate', function ($id) {
     $dompdf->render();
 
     $key = "payslips/{$id}.pdf";
-    $s3 = new S3Client(['version' => 'latest', 'region' => getenv('AWS_REGION') ?: 'ap-southeast-1']);
+    $s3 = new S3Client(['version' => 'latest', 'region' => getenv('AWS_REGION') ?: 'ap-southeast-2']);
+    $bucket = getenv('BUCKET_NAME');
     $s3->putObject([
-        'Bucket'      => getenv('BUCKET_NAME'),
+        'Bucket'      => $bucket,
         'Key'         => $key,
         'Body'        => $dompdf->output(),
         'ContentType' => 'application/pdf',
     ]);
-
     json_response([
         'success' => true,
         'message' => 'Payslip generated and uploaded.',
-        'data'    => ['payroll_id' => $slip['payroll_id'], 'payslip_file' => $key],
+        'data'    => [
+            'payroll_id' => $slip['payroll_id'],
+            'payslip_file' => $s3->getObjectUrl($bucket, $key),
+        ],
     ]);
 });
 

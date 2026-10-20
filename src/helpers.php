@@ -61,13 +61,21 @@ function build_payslip(string $payrollId): ?array
 
     $name = pick($employee, ['full_name', 'name']) ??
         trim((pick($employee, ['first_name']) ?? '') . ' ' . (pick($employee, ['last_name']) ?? ''));
+    $payPeriod = pick($payroll, ['pay_period', 'pay_date', 'payroll_date']);
+    if ($payPeriod === null) {
+        $periodStart = pick($payroll, ['pay_period_start', 'period_start']);
+        $periodEnd = pick($payroll, ['pay_period_end', 'period_end']);
+        $payPeriod = $periodStart !== null && $periodEnd !== null
+            ? $periodStart . ' to ' . $periodEnd
+            : ($periodStart ?? $periodEnd);
+    }
 
     return [
         'payroll_id'    => is_numeric($payrollId) ? (int) $payrollId : $payrollId,
         'employee_id'   => $empId,
         'employee_name' => $name,
         'department_id' => pick($employee, ['department_id']),
-        'pay_period'    => pick($payroll, ['pay_period', 'pay_date', 'period_start', 'payroll_date']),
+        'pay_period'    => $payPeriod,
         'gross_pay'     => round($gross, 2),
         'deductions'    => round($ded, 2),
         'net_pay'       => round($net, 2),
